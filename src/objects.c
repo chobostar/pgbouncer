@@ -1333,6 +1333,11 @@ found:
 		return;
 	}
 
+	if (get_active_client_count() + statlist_count(&pool->cancel_req_list) > cf_max_client_conn) {
+		disconnect_client(client, false, "no more connections allowed (max_client_conn)");
+		return;
+	}
+
 	/* drop the connection, if fails, retry later in justfree list */
 	if (!sbuf_close(&req->sbuf))
 		log_noise("sbuf_close failed, retry later");
